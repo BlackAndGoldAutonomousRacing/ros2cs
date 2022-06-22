@@ -45,7 +45,6 @@ done
 echo $MSG
 colcon build \
 --merge-install \
---event-handlers console_direct+ \
 --cmake-args \
 -DCMAKE_BUILD_TYPE=Release \
 -DSTANDALONE_BUILD=$STANDALONE \
