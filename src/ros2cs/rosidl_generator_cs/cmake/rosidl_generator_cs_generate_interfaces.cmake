@@ -94,7 +94,7 @@ set(target_dependencies
   "${rosidl_generator_cs_TEMPLATE_DIR}/msg_typesupport.c.em"
   "${rosidl_generator_cs_TEMPLATE_DIR}/msg.cs.em"
   ${rosidl_generate_interfaces_ABS_IDL_FILES}
-  ${_dependency_files}VERBOSE
+  ${_dependency_files}
 )
 
 foreach(dep ${target_dependencies})
