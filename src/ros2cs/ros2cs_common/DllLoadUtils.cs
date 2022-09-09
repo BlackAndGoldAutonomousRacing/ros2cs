@@ -48,10 +48,10 @@ namespace ROS2
     [DllImport ("kernel32.dll", EntryPoint = "FreeLibrary", SetLastError = true)]
     private static extern int FreeLibraryDesktop (IntPtr handle);
 
-    [DllImport ("libdl.so", EntryPoint = "dlopen")]
+    [DllImport ("libdl.so.2", EntryPoint = "dlopen")]
     private static extern IntPtr dlopen_unix (String fileName, int flags);
 
-    [DllImport ("libdl.so", EntryPoint = "dlclose")]
+    [DllImport ("libdl.so.2", EntryPoint = "dlclose")]
     private static extern int dlclose_unix (IntPtr handle);
 
     [DllImport ("libdl.dylib", EntryPoint = "dlopen")]
@@ -100,7 +100,7 @@ namespace ROS2
 
     private static bool IsUnix () {
       try {
-        IntPtr ptr = dlopen_unix ("libdl.so", RTLD_NOW);
+        IntPtr ptr = dlopen_unix ("libdl.so.2", RTLD_NOW);
         dlclose_unix (ptr);
         return true;
       } catch (TypeLoadException) {
@@ -227,16 +227,16 @@ namespace ROS2
 
   internal class DllLoadUtilsUnix : DllLoadUtils {
 
-    [DllImport ("libdl.so", ExactSpelling = true)]
+    [DllImport ("libdl.so.2", ExactSpelling = true)]
     private static extern IntPtr dlopen (String fileName, int flags);
 
-    [DllImport ("libdl.so", ExactSpelling = true)]
+    [DllImport ("libdl.so.2", ExactSpelling = true)]
     private static extern IntPtr dlsym (IntPtr handle, String symbol);
 
-    [DllImport ("libdl.so", ExactSpelling = true)]
+    [DllImport ("libdl.so.2", ExactSpelling = true)]
     private static extern int dlclose (IntPtr handle);
 
-    [DllImport ("libdl.so", ExactSpelling = true)]
+    [DllImport ("libdl.so.2", ExactSpelling = true)]
     private static extern IntPtr dlerror ();
 
     const int RTLD_NOW = 0x00002;
@@ -244,18 +244,16 @@ namespace ROS2
 
     //TODO (adamdbrw) Somewhat hacky solution to open (and dereference) the problematic library
     //that otherwise causes crashes in Unity Editor.
-    private bool libPreloaded = false;
+    private static bool libPreloaded = false;
     void CheckPreloadLibraries()
     {
         if (libPreloaded || GlobalVariables.preloadLibraryName == "")
             return;
+        Ros2csLogger.GetInstance().LogDebug("Preloading " + GlobalVariables.preloadLibraryName);
+        IntPtr libPtr = Load(GlobalVariables.preloadLibraryName);
 
-        IntPtr libPtr = dlopen(GlobalVariables.preloadLibraryName, RTLD_NOW | RTLD_DEEPBIND);
-        if (libPtr == IntPtr.Zero)
-            throw new InvalidOperationException("Zero pointer");
+        Ros2csLogger.GetInstance().LogDebug("Preloading " + GlobalVariables.preloadLibraryName + " successful.");
 
-        //Dereference the counter right away
-        FreeLibrary(libPtr); //TODO retval?
         libPreloaded = true;
     }
 
@@ -274,24 +272,31 @@ namespace ROS2
       return res;
     }
 
-    private IntPtr LoadLibraryByName(string libraryFileName) {
-      if (GlobalVariables.preloadLibrary)
-        CheckPreloadLibraries();
+    private IntPtr Load(string libraryFileName) {
       string libraryPath = GlobalVariables.absolutePath + libraryFileName;
       string dlopenSearchString = libraryPath;
+      Ros2csLogger.GetInstance().LogDebug("Loading lib: " + dlopenSearchString);
       IntPtr ptr = dlopen(dlopenSearchString, RTLD_NOW);
       if (ptr == IntPtr.Zero) {
         if (!String.IsNullOrEmpty(GlobalVariables.absolutePath)) {
           // Fallback - look for library in default paths
+          var errPtr = dlerror ();
+          Ros2csLogger.GetInstance().LogDebug("Could not find " + dlopenSearchString + ": " + Marshal.PtrToStringAnsi (errPtr) + ". Fallback to " + libraryFileName);
           dlopenSearchString = libraryFileName;
           ptr = dlopen(dlopenSearchString, RTLD_NOW);
         }
-      }
-
+      }      
       if (ptr == IntPtr.Zero) {
         throw new UnsatisfiedLinkError(dlopenSearchString);
       }
+      Ros2csLogger.GetInstance().LogDebug("Loaded library: " + dlopenSearchString);
       return ptr;
+    }
+
+    private IntPtr LoadLibraryByName(string libraryFileName) {
+      if (GlobalVariables.preloadLibrary)
+        CheckPreloadLibraries();
+      return Load(libraryFileName);
     }
 
     public IntPtr LoadLibrary(string fileName) {

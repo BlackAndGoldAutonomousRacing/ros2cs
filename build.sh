@@ -10,7 +10,7 @@ display_usage() {
 }
 
 if [ -z "${ROS_DISTRO}" ]; then
-    echo "Source your ros2 distro first (Foxy and Galactic are supported)"
+    echo "Source your ros2 distro first (foxy, galactic, humble or rolling are supported)"
     exit 1
 fi
 
@@ -49,5 +49,5 @@ colcon build \
 -DCMAKE_BUILD_TYPE=Release \
 -DSTANDALONE_BUILD=$STANDALONE \
 -DBUILD_TESTING=$TESTS \
--DCMAKE_SHARED_LINKER_FLAGS="-Wl,-rpath=.,--disable-new-dtags" \
+-DCMAKE_SHARED_LINKER_FLAGS="-Wl,-rpath,'\$ORIGIN',-rpath=.,--disable-new-dtags" \
 --no-warn-unused-cli
