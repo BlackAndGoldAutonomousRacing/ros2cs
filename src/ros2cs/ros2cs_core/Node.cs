@@ -59,7 +59,7 @@ namespace ROS2
       nodeHandle = NativeRcl.rcl_get_zero_initialized_node();
       defaultNodeOptions = NativeRclInterface.rclcs_node_create_default_options();
       Utils.CheckReturnEnum(NativeRcl.rcl_node_init(ref nodeHandle, nodeName, nodeNamespace, ref context, defaultNodeOptions));
-      logger.LogInfo("Node initialized");
+      logger.LogDebug("Node initialized");
     }
 
     /// <summary> Finalizer supporting IDisposable model </summary>
@@ -97,7 +97,7 @@ namespace ROS2
           Utils.CheckReturnEnum(NativeRcl.rcl_node_fini(ref nodeHandle));
           NativeRclInterface.rclcs_node_dispose_options(defaultNodeOptions);
           disposed = true;
-          logger.LogInfo("Node " + name + " destroyed");
+          logger.LogDebug("Node " + name + " destroyed");
         }
       }
     }
@@ -116,7 +116,7 @@ namespace ROS2
 
         Publisher<T> publisher = new Publisher<T>(topic, this, qos);
         publishers.Add(publisher);
-        logger.LogInfo("Created Publisher for topic " + topic);
+        logger.LogDebug("Created Publisher for topic " + topic);
         return publisher;
       }
     }
@@ -135,7 +135,7 @@ namespace ROS2
 
         Subscription<T> subscription = new Subscription<T>(topic, this, callback, qos);
         subscriptions.Add(subscription);
-        logger.LogInfo("Created subscription for topic " + topic);
+        logger.LogDebug("Created subscription for topic " + topic);
         return subscription;
       }
     }
