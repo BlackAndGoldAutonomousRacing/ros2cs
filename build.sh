@@ -49,7 +49,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 echo $MSG
-if [ DEBUG ]
+if [ $DEBUG == 1 ]
 then
 colcon build \
 --merge-install \
@@ -61,7 +61,6 @@ colcon build \
 -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-rpath,'\$ORIGIN',-rpath=.,--disable-new-dtags" \
 --no-warn-unused-cli
 else
-then
 colcon build \
 --merge-install \
 --cmake-args \
