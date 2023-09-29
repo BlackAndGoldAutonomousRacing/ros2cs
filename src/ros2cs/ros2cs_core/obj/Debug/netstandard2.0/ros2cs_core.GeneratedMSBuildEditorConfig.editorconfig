@@ -1,0 +1,3 @@
+is_global = true
+build_property.RootNamespace = ros2cs_core
+build_property.ProjectDir = /home/apun1/ros2cs/src/ros2cs/ros2cs_core/

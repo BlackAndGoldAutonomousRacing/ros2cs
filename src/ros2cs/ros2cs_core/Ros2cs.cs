@@ -222,6 +222,7 @@ namespace ROS2
         var allSubscriptions = new List<ISubscriptionBase>();
         var allClients = new List<IClientBase>();
         var allServices = new List<IServiceBase>();
+        var allTimers = new List<ITimerBase>();
         foreach (INode node_interface in nodes)
         {
           Node node = node_interface as Node;
@@ -231,6 +232,7 @@ namespace ROS2
           allSubscriptions.AddRange(node.Subscriptions.Where(s => s != null));
           allClients.AddRange(node.Clients.Where(c => c != null));
           allServices.AddRange(node.Services.Where(s => s != null));
+          allTimers.AddRange(node.Timers.Where(s => s != null));
         }
 
         // TODO - investigate performance impact
@@ -269,6 +271,7 @@ namespace ROS2
           allSubscriptions.ForEach(subscription => subscription.TakeMessage());
           allClients.ForEach(client => client.TakeMessage());
           allServices.ForEach(service => service.TakeMessage());
+          allTimers.ForEach(timer => timer.TakeMessage());
         }
         return true;
       }

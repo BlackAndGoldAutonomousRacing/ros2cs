@@ -1,3 +1,4 @@
+// Copyright 2023 Alec Pannunzio
 // Copyright 2019-2021 Robotec.ai
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,12 +60,24 @@ namespace ROS2
       }
     }
 
+    internal List<ITimerBase> Timers
+    {
+      get
+      {
+        lock (mutex)
+        {
+          return timers.ToList();
+        }
+      }
+    }
+
     internal rcl_node_t nodeHandle;
     private IntPtr defaultNodeOptions;
     private HashSet<ISubscriptionBase> subscriptions;
     private HashSet<IPublisherBase> publishers;
     private HashSet<IClientBase> clients;
     private HashSet<IServiceBase> services;
+    private HashSet<ITimerBase> timers;
     private readonly object mutex = new object();
     private bool disposed = false;
 
@@ -82,6 +95,7 @@ namespace ROS2
       publishers = new HashSet<IPublisherBase>();
       clients = new HashSet<IClientBase>();
       services = new HashSet<IServiceBase>();
+      timers = new HashSet<ITimerBase>();
 
       nodeHandle = NativeRcl.rcl_get_zero_initialized_node();
       defaultNodeOptions = NativeRclInterface.rclcs_node_create_default_options();
@@ -132,6 +146,11 @@ namespace ROS2
             service.Dispose();
           }
           services.Clear();
+
+          foreach(ITimerBase timer in timers)
+          {
+            timer.Dispose();
+          }
 
           Utils.CheckReturnEnum(NativeRcl.rcl_node_fini(ref nodeHandle));
           NativeRclInterface.rclcs_node_dispose_options(defaultNodeOptions);
@@ -275,6 +294,38 @@ namespace ROS2
           logger.LogInfo("Removing subscription for topic " + subscription.Topic);
           subscription.Dispose();
           return subscriptions.Remove(subscription);
+        }
+        return false;
+      }
+    }
+
+  //Subscription<T> CreateSubscription<T>(string topic, Action<T> callback, QualityOfServiceProfile qos = null) where T : Message, new()
+    public Timer CreateTimer(float delay, Action callback)
+    {
+      lock (mutex)
+      {
+        if (disposed || !Ros2cs.Ok())
+        {
+          logger.LogWarning("Cannot create timer as the class is already disposed or shutdown was called");
+          return null;
+        }
+
+        Timer timer = new Timer(delay, this, callback);
+        timers.Add(timer);
+        logger.LogInfo("Created timer");
+        return timer;
+      }
+    }
+
+    public bool RemoveTimer(ITimerBase timer)
+    {
+      lock (mutex)
+      {
+        if (timers.Contains(timer))
+        {
+          logger.LogInfo("Removing timer for delay" + timer.Delay);
+          timer.Dispose();
+          return timers.Remove(timer);
         }
         return false;
       }
