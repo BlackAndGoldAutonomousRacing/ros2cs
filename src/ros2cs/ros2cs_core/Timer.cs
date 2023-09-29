@@ -47,11 +47,20 @@ namespace ROS2
       if (useRosTime)
       {
         RosTime now = clock.Now;
-  
+        double timeDiff = (now.sec - prevCallTime.sec) + (now.nanosec - prevCallTime.nanosec)/1e9;
+
         if ((now.sec - prevCallTime.sec) + (now.nanosec - prevCallTime.nanosec)/1e9 > delay)
         {
             callback();
-            prevCallTime = now;
+
+            if (timeDiff < 2*delay) {
+              // if we are only a little late, increment the prevCallTime by delay to target the desired frequency
+              prevCallTime.sec += (int) delay;
+              prevCallTime.nanosec += (uint) ((delay-(int)delay)*1e9);
+            }else{
+              // if we are really late, reset the timer so we don't pile up callbacks
+              prevCallTime = now;
+            }
         }
       }
       else
@@ -69,7 +78,7 @@ namespace ROS2
     /// <see cref="INode.CreateTimer"/>
     internal Timer(float delay, Node node, Action cb, bool useRosTime = true)
     {
-      this.delay = delay;
+      this.delay = Math.Abs(delay);
       this.callback = cb;
       this.useRosTime = useRosTime;
       this.clock = new ROS2.Clock();
