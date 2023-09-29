@@ -47,6 +47,7 @@ namespace ROS2
         if (timeSpan > delay) // FIXME should check if timerspan is done
         {
             callback();
+            prevCallTime = now;
         }
       
     }
