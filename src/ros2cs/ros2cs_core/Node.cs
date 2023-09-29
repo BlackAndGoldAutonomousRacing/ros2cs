@@ -300,7 +300,7 @@ namespace ROS2
     }
 
   //Subscription<T> CreateSubscription<T>(string topic, Action<T> callback, QualityOfServiceProfile qos = null) where T : Message, new()
-    public Timer CreateTimer(float delay, Action callback)
+    public Timer CreateTimer(float delay, Action callback, bool useRosTime = true)
     {
       lock (mutex)
       {
@@ -310,7 +310,7 @@ namespace ROS2
           return null;
         }
 
-        Timer timer = new Timer(delay, this, callback);
+        Timer timer = new Timer(delay, this, callback, useRosTime);
         timers.Add(timer);
         logger.LogInfo("Created timer");
         return timer;

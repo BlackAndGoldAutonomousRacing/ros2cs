@@ -32,9 +32,11 @@ namespace ROS2
     private rcl_node_t nodeHandle;
     private readonly Action callback;
 
+    private bool useRosTime = false;
     private float delay; // the time duration for this timer
     private ROS2.Clock clock; // clock to keep track of rostime for the timer
     private RosTime prevCallTime; // the rostime where we last called the callback
+    private DateTime prevCallDateTime = DateTime.Now;
     public object Mutex { get { return mutex; } }
     private object mutex = new object();
 
@@ -42,25 +44,36 @@ namespace ROS2
     // TODO(adamdbrw) this should not be public - add an internal interface
     public void TakeMessage()
     {
+      if (useRosTime)
+      {
         RosTime now = clock.Now;
-        double timeSpan = (now.sec - prevCallTime.sec) + (now.nanosec - prevCallTime.nanosec)/1e9;
-        if (timeSpan > delay) // FIXME should check if timerspan is done
+  
+        if ((now.sec - prevCallTime.sec) + (now.nanosec - prevCallTime.nanosec)/1e9 > delay)
         {
             callback();
             prevCallTime = now;
         }
-      
+      }
+      else
+      {
+        DateTime now = DateTime.Now;
+        if (now.Subtract(prevCallDateTime).TotalSeconds > delay) {
+          callback();
+          prevCallDateTime = now;
+        }
+
+      }
     }
 
     /// <summary> Internal constructor for Timer. Use INode.CreateTimer to construct </summary>
     /// <see cref="INode.CreateTimer"/>
-    internal Timer(float delay, Node node, Action cb)
+    internal Timer(float delay, Node node, Action cb, bool useRosTime = true)
     {
       this.delay = delay;
-      callback = cb;
-
-      clock = new ROS2.Clock();
-      prevCallTime = clock.Now;
+      this.callback = cb;
+      this.useRosTime = useRosTime;
+      this.clock = new ROS2.Clock();
+      this.prevCallTime = clock.Now;
     }
 
     ~Timer()

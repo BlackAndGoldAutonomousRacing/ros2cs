@@ -86,7 +86,7 @@ namespace ROS2
     /// <param name="delay">the delay for the timer to use. The callback function will be called every <paramref name="delay"/> seconds.</param>
     /// <param name="callback">Action to be called when the <paramref name="delay"/> has passed.</param>
     /// <returns>Timer for this delay</returns>
-    Timer CreateTimer(float delay, Action callback);
+    Timer CreateTimer(float delay, Action callback, bool useRosTime = true);
 
     /// <summary>
     /// Removes a timer
