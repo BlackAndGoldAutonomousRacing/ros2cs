@@ -79,6 +79,7 @@ set(CS_INTERFACES
   interfaces/IService.cs
   interfaces/IPublisher.cs
   interfaces/ISubscription.cs
+  interfaces/ITimer.cs
 )
 
 set(CS_NATIVE
@@ -100,6 +101,7 @@ set(CS_SOURCES
   Clock.cs
   Client.cs
   Service.cs
+  Timer.cs
   Node.cs
   Publisher.cs
   QualityOfServiceProfile.cs

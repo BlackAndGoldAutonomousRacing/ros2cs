@@ -1,0 +1,5 @@
+/home/apun1/ros2cs/src/ros2cs/ros2cs_core/obj/Debug/netstandard2.0/ros2cs_core.csproj.AssemblyReference.cache
+/home/apun1/ros2cs/src/ros2cs/ros2cs_core/obj/Debug/netstandard2.0/ros2cs_core.GeneratedMSBuildEditorConfig.editorconfig
+/home/apun1/ros2cs/src/ros2cs/ros2cs_core/obj/Debug/netstandard2.0/ros2cs_core.AssemblyInfoInputs.cache
+/home/apun1/ros2cs/src/ros2cs/ros2cs_core/obj/Debug/netstandard2.0/ros2cs_core.AssemblyInfo.cs
+/home/apun1/ros2cs/src/ros2cs/ros2cs_core/obj/Debug/netstandard2.0/ros2cs_core.csproj.CoreCompileInputs.cache

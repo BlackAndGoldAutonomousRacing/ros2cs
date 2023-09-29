@@ -80,5 +80,19 @@ namespace ROS2
     /// <param name="subscription"> Subscription created with earlier CreateSubscription call </param>
     /// <returns> Whether removal actually took place. Safe to ignore </returns>
     bool RemoveSubscription(ISubscriptionBase subscription);
+
+    /// <summary> Creates a timer for this node with the given delay and callback </summary>
+    /// <description> Can only be called in an initialized Ros2cs state. </description>
+    /// <param name="delay">the delay for the timer to use. The callback function will be called every <paramref name="delay"/> seconds.</param>
+    /// <param name="callback">Action to be called when the <paramref name="delay"/> has passed.</param>
+    /// <returns>Timer for this delay</returns>
+    Timer CreateTimer(float delay, Action callback, bool useRosTime = true);
+
+    /// <summary>
+    /// Removes a timer
+    /// </summary>
+    /// <param name="timer">The timer to remove.</param>
+    /// <returns>Whether removal actually took place. Safe to ignore </returns>
+    bool RemoveTimer(ITimerBase timer);
   }
 }
