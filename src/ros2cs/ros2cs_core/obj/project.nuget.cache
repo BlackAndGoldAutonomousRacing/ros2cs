@@ -1,11 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Htv3Az4fcbTs95novcPsSAPioya4W4p69ssL4RHb9USpMUSg0Dwo7OJjTt24X0EyC5JSZd2jUza1aZflr1PIiw==",
+  "dgSpecHash": "nZlkoZQ5il6BlT7awF11lFHtvOjYzj6/cSGXQzRCt8YRAQcmLMZreRXlDFvZN4hIqlayXutPfpu8FQy0etfrRw==",
   "success": true,
   "projectFilePath": "/home/apun1/ros2cs/src/ros2cs/ros2cs_core/ros2cs_core.csproj",
-  "expectedPackageFiles": [
-    "/home/apun1/.nuget/packages/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "/home/apun1/.nuget/packages/netstandard.library/2.0.3/netstandard.library.2.0.3.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }
