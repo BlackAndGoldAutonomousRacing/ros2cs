@@ -228,7 +228,7 @@ if(STANDALONE_BUILD)
     endif()
 
     # Get rmw_cyclonedds_cpp for humble
-    if("${_library_name}" STREQUAL "rmw_cyclonedds_cpp" AND (ros2_distro STREQUAL "humble" OR ros2_distro STREQUAL "rolling"))
+    if("${_library_name}" STREQUAL "rmw_cyclonedds_cpp" AND (ros2_distro STREQUAL "humble" OR ros2_disto STREQUAL "kilted" OR ros2_distro STREQUAL "rolling"))
       fetch_target_lib(rmw_cyclonedds_cpp::rmw_cyclonedds_cpp)
       list(APPEND REQ_STANDALONE_LIBS ${rmw_cyclonedds_cpp_rmw_cyclonedds_cpp_LIB_PATH})
     endif()
@@ -357,7 +357,7 @@ if(STANDALONE_BUILD)
     rosidl_typesupport_introspection_cpp
     spdlog
     tracetools
-    yaml
+    yaml-cpp
   )
   
   if(UNIX AND NOT ros2_distro STREQUAL "foxy")
