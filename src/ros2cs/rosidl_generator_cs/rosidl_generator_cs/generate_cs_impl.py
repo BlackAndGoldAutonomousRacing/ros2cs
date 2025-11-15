@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from rosidl_cmake import generate_files
+from rosidl_pycommon import generate_files
 from rosidl_generator_c import idl_type_to_c
 from rosidl_parser.definition import AbstractGenericString
 from rosidl_parser.definition import AbstractSequence

@@ -20,10 +20,8 @@ find_package(ament_cmake REQUIRED)
 find_package(rosidl_cmake REQUIRED)
 find_package(rmw_implementation_cmake REQUIRED)
 
-ament_export_dependencies(ament_cmake)
-ament_export_dependencies(rosidl_cmake)
-ament_export_dependencies(rmw_implementation_cmake)
-
+# Modern generator packages do NOT export fake library dependencies
+# They are build-time code generators, not link-time libraries
 ament_index_register_resource("rosidl_generator_packages")
 
 ament_python_install_package(${PROJECT_NAME})

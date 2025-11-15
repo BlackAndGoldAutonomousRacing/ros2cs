@@ -12,10 +12,10 @@
   <buildtool_depend>dotnet_cmake_module</buildtool_depend>
   <buildtool_depend>rmw_implementation_cmake</buildtool_depend>
 
+  <!-- Modern generator packages do NOT export library dependencies -->
+  <!-- They are build-time code generators, not runtime libraries -->
   <buildtool_export_depend>ament_cmake</buildtool_export_depend>
   <buildtool_export_depend>rosidl_cmake</buildtool_export_depend>
-  <buildtool_export_depend>rosidl_typesupport_c</buildtool_export_depend>
-  <buildtool_export_depend>rosidl_typesupport_interface</buildtool_export_depend>
   <buildtool_export_depend>ament_cmake_export_assemblies</buildtool_export_depend>
   <buildtool_export_depend>dotnet_cmake_module</buildtool_export_depend>
   <buildtool_export_depend>rmw_implementation_cmake</buildtool_export_depend>

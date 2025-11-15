@@ -44,6 +44,46 @@ if(NOT WIN32)
   endif()
 endif()
 
+# Modern replacement for ament_target_dependencies()
+# Generator packages (rosidl_generator_c, rosidl_generator_cs) should NEVER be linked
+# Uses plain signature (no PUBLIC/PRIVATE) to match existing target_link_libraries calls
+function(_rosidl_cs_modern_link target)
+  foreach(dep IN LISTS ARGN)
+
+    # Case 1: imported target exists, e.g., rclcpp::rclcpp
+    if(TARGET ${dep}::${dep})
+      target_link_libraries(${target} ${dep}::${dep})
+      continue()
+    endif()
+
+    # Case 2: message packages often export <pkg>_TARGETS
+    if(DEFINED ${dep}_TARGETS)
+      target_link_libraries(${target} ${${dep}_TARGETS})
+      continue()
+    endif()
+
+    # Case 3: typesupport layer exports imported targets
+    if(dep STREQUAL "rosidl_typesupport_c")
+      target_link_libraries(${target} rosidl_typesupport_c::rosidl_typesupport_c)
+      continue()
+    endif()
+
+    if(dep STREQUAL "rosidl_typesupport_interface")
+      target_link_libraries(${target} rosidl_typesupport_interface::rosidl_typesupport_interface)
+      continue()
+    endif()
+
+    # Generator packages are NOT libraries - skip them silently
+    if(dep STREQUAL "rosidl_generator_c" OR dep STREQUAL "rosidl_generator_cs")
+      continue()
+    endif()
+
+    # Fallback: do nothing (avoids breaking builds)
+    message(WARNING "No modern imported target found for ${dep}, skipping link for ${target}")
+  endforeach()
+endfunction()
+
+
 # For each IDL file
 foreach(_idl_file ${rosidl_generate_interfaces_ABS_IDL_FILES})
   get_filename_component(_parent_folder "${_idl_file}" DIRECTORY)
@@ -236,7 +276,7 @@ foreach(_generated_msg_c_ts_file ${_generated_msg_c_ts_files})
     endif()
   endif()
 
-  message("Link libraries: ${PROJECT_NAME}__${_typesupport_impl}")
+  # Link against typesupport and generated C libraries (msg)
   target_link_libraries(${_target_name}
     ${PROJECT_NAME}__${_typesupport_impl}
     ${_extension_link_flags}
@@ -258,18 +298,16 @@ foreach(_generated_msg_c_ts_file ${_generated_msg_c_ts_files})
     ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cs
   )
 
-  ament_target_dependencies(${_target_name}
-    "rosidl_generator_c"
-    "rosidl_generator_cs"
-    "rosidl_typesupport_c"
-    "rosidl_typesupport_interface"
+  # Use modern linking - generator packages are NOT linked
+  _rosidl_cs_modern_link(${_target_name}
+    rosidl_typesupport_c
+    rosidl_typesupport_interface
   )
-
+  
   foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
-    ament_target_dependencies(${_target_name}
-      ${_pkg_name}
-    )
+    _rosidl_cs_modern_link(${_target_name} ${_pkg_name})
   endforeach()
+
 
   add_dependencies(${_target_name}
     ${rosidl_generate_interfaces_TARGET}__${_typesupport_impl}
@@ -343,7 +381,7 @@ foreach(_generated_srv_c_ts_file ${_generated_srv_c_ts_files})
     endif()
   endif()
 
-  message("Link libraries: ${PROJECT_NAME}__${_typesupport_impl}")
+  # Link against typesupport and generated C libraries (srv)
   target_link_libraries(${_target_name}
     ${PROJECT_NAME}__${_typesupport_impl}
     ${_extension_link_flags}
@@ -365,17 +403,14 @@ foreach(_generated_srv_c_ts_file ${_generated_srv_c_ts_files})
     ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cs
   )
 
-  ament_target_dependencies(${_target_name}
-    "rosidl_generator_c"
-    "rosidl_generator_cs"
-    "rosidl_typesupport_c"
-    "rosidl_typesupport_interface"
+  # Use modern linking - generator packages are NOT linked
+  _rosidl_cs_modern_link(${_target_name}
+    rosidl_typesupport_c
+    rosidl_typesupport_interface
   )
-
+  
   foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
-    ament_target_dependencies(${_target_name}
-      ${_pkg_name}
-    )
+    _rosidl_cs_modern_link(${_target_name} ${_pkg_name})
   endforeach()
 
   add_dependencies(${_target_name}
@@ -392,7 +427,7 @@ foreach(_generated_srv_c_ts_file ${_generated_srv_c_ts_files})
 
 endforeach()
 
-message("Install targets")
+# Install generated library targets
 if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
   install(TARGETS ${_target_name_lib} EXPORT ${_target_name}
     ARCHIVE DESTINATION lib

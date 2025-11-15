@@ -76,7 +76,7 @@ void @(msg_typename)_native_write_field_@(member.name)(void *message_handle, @(g
 {
   @(msg_typename) *ros_message = (@(msg_typename) *)message_handle;
 @[    if  isinstance(member.type, AbstractGenericString)]@
-  if (&ros_message->@(member.name).data)
+  if (ros_message->@(member.name).data)
   { // reinitializing string if message is being reused
     rosidl_runtime_c__String__fini(&ros_message->@(member.name));
     rosidl_runtime_c__String__init(&ros_message->@(member.name));
@@ -115,7 +115,7 @@ bool @(msg_typename)_native_write_field_@(member.name)(@(get_c_type(member.type.
   }
   @(get_c_type(member.type.value_type)) *dest = ros_message->@(member.name).data;
 @[    end if]@
-  memcpy(dest, value, sizeof(@(get_c_type(member.type.value_type)))*size);
+  memcpy(dest, value, sizeof(@(get_c_type(member.type.value_type))) * (size_t)size);
   return true;
 }
 @[  end if]@
@@ -149,14 +149,14 @@ bool @(msg_typename)_native_write_field_@(member.name)(char *value, int index, v
 @[    if isinstance(member.type, Array)]@
   if (index >= @(member.type.size))
       return false;
-  if (&ros_message->@(member.name)[index].data)
+  if (ros_message->@(member.name)[index].data)
   { // reinitializing string if message is being reused
     rosidl_runtime_c__String__fini(&ros_message->@(member.name)[index]);
     rosidl_runtime_c__String__init(&ros_message->@(member.name)[index]);
   }
   rosidl_runtime_c__String__assign(&ros_message->@(member.name)[index], value);
 @[    elif isinstance(member.type, AbstractSequence)]@
-  if (&ros_message->@(member.name).data[index].data)
+  if (ros_message->@(member.name).data[index].data)
   { // reinitializing string if message is being reused
     rosidl_runtime_c__String__fini(&ros_message->@(member.name).data[index]);
     rosidl_runtime_c__String__init(&ros_message->@(member.name).data[index]);
