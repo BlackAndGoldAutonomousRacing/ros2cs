@@ -11,7 +11,7 @@
 @{
 from rosidl_generator_c import idl_type_to_c
 from rosidl_generator_c import idl_structure_type_to_c_typename
-from rosidl_cmake import convert_camel_case_to_lower_case_underscore
+from rosidl_pycommon import convert_camel_case_to_lower_case_underscore
 from rosidl_parser.definition import BasicType
 from rosidl_parser.definition import NamespacedType
 from rosidl_parser.definition import NamedType
